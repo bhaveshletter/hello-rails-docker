@@ -1,0 +1,58 @@
+services:
+
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: hello
+      POSTGRES_PASSWORD: test_db_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - hello-postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8
+    ports:
+      - '6379:6379'
+    volumes:
+      - hello-redis:/var/lib/redis/data
+
+  hello:
+    # build:
+    #   context: .
+    image: $DOCKER_USERNAME/hello-rails-docker-hello:latest
+    volumes:
+      - ./hello:/opt/app
+    links:
+      - postgres
+      - redis
+    ports:
+      - '3001:3000'
+    env_file:
+      - .env
+
+  sidekiq:
+    # build:
+    #   context: .
+    image: $DOCKER_USERNAME/hello-rails-docker-sidekiq:latest
+    command: bundle exec sidekiq
+    links:
+      - postgres
+      - redis
+    env_file:
+      - .env
+
+  nginx:
+    image: $DOCKER_USERNAME/hello-rails-docker-nginx:latest
+    # build:
+    #   context: .
+    #   dockerfile: ./Dockerfile.nginx
+    links:
+      - hello
+    ports:
+      - '8020:8020'
+
+volumes:
+  hello-postgres:
+  hello-redis:
