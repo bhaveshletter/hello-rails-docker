@@ -1,0 +1,13 @@
+# Dockerfile.rails
+FROM ruby:3.1.2 AS ror722irb312-docker
+
+# Default directory
+ENV INSTALL_DIR="/opt/app"
+RUN mkdir -p $INSTALL_DIR
+
+# Install rails, etc
+RUN gem install rails:7.2.2 bundler:2.6.8
+
+WORKDIR $INSTALL_DIR
+
+CMD ["/bin/sh"]

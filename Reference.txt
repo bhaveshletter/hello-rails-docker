@@ -1,0 +1,25 @@
+Ref. https://semaphore.io/community/tutorials/dockerizing-a-ruby-on-rails-application#h-what-is-docker-compose
+
+# Create empty repositor 'hello-rails-docker' on github and clone
+git clone ... hello-rails-docker
+
+# Create docker image of Rails name 'ror722irb312-docker'
+docker build -t ror722irb312-docker -f Dockerfile.rails .
+
+# Create a new rails project using existing docker image 'ror722irb312-docker' name hello
+docker run -it -v $PWD:/opt/app ror722irb312-docker rails new hello --database=postgresql --skip-bundle
+
+# Remove git already cloned
+rm -rf hello/.git
+
+# Env variables
+touch env-example
+cp env-example .env
+
+docker compose up --build
+
+docker compose run hello rake db:reset
+docker compose run hello rake db:migrate
+
+
+Next .. CI/CD
